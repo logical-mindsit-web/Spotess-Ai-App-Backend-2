@@ -12,7 +12,7 @@ import history from "./src/Routes/History-Routes.js";
 import mappost from "./src/Routes/Map-Routes.js";
 import profileRoutes from './src/Routes/Profile-Routes.js';
 import robotRoutes from './src/Routes/Robot-Routes.js';
-
+import swap from "./src/Routes/Swap-Routes.js";
 const PORT = 8080;
 const app = express();
 
@@ -30,6 +30,8 @@ app.use('/modes', history);
 app.use('/', mappost);
 app.use('/', profileRoutes);
 app.use('/', robotRoutes);
+app.use('/', swap);
+
 
 app.listen(PORT, async () => {
   await connectDB();
