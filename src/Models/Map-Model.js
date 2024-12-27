@@ -12,7 +12,7 @@ const coordinateSchema = new Schema({
 const dataSchema = new Schema({
   emailId:{type:String ,required:true},
   robotId:{type:String,required:true},
-  coordinates: { type: [coordinateSchema], required: true },
+  coordinates: { type: [coordinateSchema] },
   map_name: { type: String, required: true },
   map_image: { type: Buffer, required: true },
   date: { type: Date, default: Date.now },
