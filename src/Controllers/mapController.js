@@ -11,14 +11,15 @@ const convertBase64ToBuffer = (base64String) => {
 // save Map
 export const saveMappingData = async (req, res) => {
   try {
-    const { emailId, robotId, map_image, map_name } = req.body;
+    const { emailId, robotId, map_name, map_image, coordinates } = req.body;
 
     // Collect missing fields
     const missingFields = [];
     if (!emailId) missingFields.push("emailId");
     if (!robotId) missingFields.push("robotId");
-    if (!map_image) missingFields.push("map_image");
     if (!map_name) missingFields.push("map_name");
+    if (!map_image) missingFields.push("map_image");
+    if (!coordinates) missingFields.push("coordinates");
 
     // If any fields are missing, return a specific error message
     if (missingFields.length > 0) {
@@ -27,6 +28,25 @@ export const saveMappingData = async (req, res) => {
         message: `Missing required fields: ${missingFields.join(", ")}.`,
       });
     }
+    const validatedCoordinates = coordinates.map((item) => {
+      if (
+        !item.objectname ||
+        !item.object_coordinate ||
+        typeof item.object_coordinate.x !== "number" ||
+        typeof item.object_coordinate.y !== "number" ||
+        typeof item.object_coordinate.angle !== "number"
+      ) {
+        throw new Error("Invalid coordinate object format.");
+      }
+      return {
+        objectname: item.objectname,
+        object_coordinate: {
+          x: item.object_coordinate.x,
+          y: item.object_coordinate.y,
+          angle: item.object_coordinate.angle,
+        },
+      };
+    });
 
     let imageBase64;
     try {
@@ -44,6 +64,7 @@ export const saveMappingData = async (req, res) => {
       robotId,
       map_image: imageBase64,
       map_name,
+      coordinates: validatedCoordinates,
     });
 
     await newMappingData.save();
@@ -172,7 +193,6 @@ export const getMapImage = async (req, res) => {
 // Delete Map
 export const deleteMappingData = async (req, res) => {
   try {
-  
     const { robotId, map_name } = req.query;
     console.log("params is ", req.query);
 

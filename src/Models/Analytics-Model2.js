@@ -99,6 +99,33 @@ const RobotAnalyticsSchema = new MongooseSchema({
     },
     required: true,
   },
+  objectDetection: {
+    type: [
+      {
+        objectName: {
+          type: String,
+          required: true,
+        },
+        objectCoordinate: {
+          type: {
+            x: { type: Number, required: true },
+            y: { type: Number, required: true },
+            angle: { type: Number, default: 0.0 },
+          },
+          required: true,
+        },
+        distance: {
+          type: Number, // Distance in meters
+          required: true,
+        },
+        accuracyPercentage: {
+          type: Number, // Accuracy as a percentage (0-100)
+          required: true,
+        },
+      },
+    ],
+    required: false, // This field can be optional, based on your needs
+  },
 },
 { timestamps: true }
 );

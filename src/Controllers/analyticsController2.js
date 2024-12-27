@@ -20,6 +20,7 @@ export const saveRobotAnalytics2 = async (req, res) => {
       distanceTravelledInMeters,
       uvLightTimes,
       motionDetectionTimes,
+      objectDetection,
     } = req.body;
 
     // Validate motionDetectionTimes structure to allow either resumeTime or abortedTime
@@ -33,7 +34,34 @@ export const saveRobotAnalytics2 = async (req, res) => {
         }
       }
     }
+    // Validate objectDetection structure
+    if (objectDetection) {
+      for (const entry of objectDetection) {
+        if (
+          !entry.objectName ||
+          !entry.objectCoordinate ||
+          typeof entry.distance !== "number" ||
+          typeof entry.accuracyPercentage !== "number"
+        ) {
+          return res.status(400).json({
+            message:
+              "Each object detection entry must include objectName, objectCoordinate, distance (number), and accuracyPercentage (number).",
+          });
+        }
 
+        // Validate objectCoordinate structure
+        const { objectCoordinate } = entry;
+        if (
+          typeof objectCoordinate.x !== "number" ||
+          typeof objectCoordinate.y !== "number"
+        ) {
+          return res.status(400).json({
+            message:
+              "ObjectCoordinate must include valid x and y values (numbers).",
+          });
+        }
+      }
+    }
     // Create a new instance of RobotAnalytics
     const robotAnalytics = new RobotAnalytics({
       robotId,
@@ -53,6 +81,7 @@ export const saveRobotAnalytics2 = async (req, res) => {
       distanceTravelledInMeters,
       uvLightTimes,
       motionDetectionTimes,
+      objectDetection,
     });
 
     // Save the data to the database
