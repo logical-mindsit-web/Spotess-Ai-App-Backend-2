@@ -26,7 +26,7 @@ const RobotAnalyticsSchema = new MongooseSchema({
   status: {
     type: String,
     required: true,
-    enum: ["Completed", "Partial","Abort"], 
+    enum: ["Completed", "Partial"], // Status can only be "completed" or "Partial"
   },
   disinfectionStartTime: {
     type: Date,
