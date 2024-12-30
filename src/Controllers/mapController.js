@@ -19,7 +19,6 @@ export const saveMappingData = async (req, res) => {
     if (!robotId) missingFields.push("robotId");
     if (!map_name) missingFields.push("map_name");
     if (!map_image) missingFields.push("map_image");
-    if (!coordinates) missingFields.push("coordinates");
 
     // If any fields are missing, return a specific error message
     if (missingFields.length > 0) {
@@ -28,25 +27,30 @@ export const saveMappingData = async (req, res) => {
         message: `Missing required fields: ${missingFields.join(", ")}.`,
       });
     }
-    const validatedCoordinates = coordinates.map((item) => {
-      if (
-        !item.objectname ||
-        !item.object_coordinate ||
-        typeof item.object_coordinate.x !== "number" ||
-        typeof item.object_coordinate.y !== "number" ||
-        typeof item.object_coordinate.angle !== "number"
-      ) {
-        throw new Error("Invalid coordinate object format.");
-      }
-      return {
-        objectname: item.objectname,
-        object_coordinate: {
-          x: item.object_coordinate.x,
-          y: item.object_coordinate.y,
-          angle: item.object_coordinate.angle,
-        },
-      };
-    });
+
+    let validatedCoordinates = [];
+    if (coordinates && Array.isArray(coordinates)) {
+      // Only validate coordinates if they are provided
+      validatedCoordinates = coordinates.map((item) => {
+        if (
+          !item.objectname ||
+          !item.object_coordinate ||
+          typeof item.object_coordinate.x !== "number" ||
+          typeof item.object_coordinate.y !== "number" ||
+          typeof item.object_coordinate.angle !== "number"
+        ) {
+          throw new Error("Invalid coordinate object format.");
+        }
+        return {
+          objectname: item.objectname,
+          object_coordinate: {
+            x: item.object_coordinate.x,
+            y: item.object_coordinate.y,
+            angle: item.object_coordinate.angle,
+          },
+        };
+      });
+    }
 
     let imageBase64;
     try {
@@ -64,7 +68,7 @@ export const saveMappingData = async (req, res) => {
       robotId,
       map_image: imageBase64,
       map_name,
-      coordinates: validatedCoordinates,
+      coordinates: validatedCoordinates, // Can be empty if no coordinates are provided
     });
 
     await newMappingData.save();
