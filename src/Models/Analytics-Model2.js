@@ -120,6 +120,7 @@ const RobotAnalyticsSchema = new MongooseSchema({
         },
       },
     ],
+    required: false, // This field is now optional
   },
 },
 { timestamps: true }
